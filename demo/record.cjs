@@ -5,7 +5,8 @@ const path = require('path');
 const { chromium } = require('C:/Users/' + process.env.USERNAME + '/AppData/Roaming/npm/node_modules/playwright');
 const out = process.argv[2];
 const png = fs.readFileSync(path.join(__dirname, '..', 'docs', 'zap-history.png')).toString('base64');
-const lines = fs.readFileSync(path.join(__dirname, 'e2e_output.txt'), 'utf8').split(/\r?\n/).filter((l) => l.trim());
+const read = (f) => fs.readFileSync(path.join(__dirname, f), 'utf8').split(/\r?\n/).filter((l) => l.trim());
+const lines = [...read('e2e_output.txt'), '--- the chain: Jotform form, Zapier, Airtable ---', ...read('e2e_chain_output.txt')];
 
 const historyHtml = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:#fff}img{width:100%;display:block}
 #cap{position:fixed;left:0;right:0;bottom:0;background:#161b22;color:#e6edf3;font:15px Consolas,monospace;padding:12px 20px}</style>
@@ -14,7 +15,7 @@ const termHtml = `<!doctype html><meta charset="utf-8"><style>
 html,body{margin:0;background:#0d1117;color:#c9d1d9;font:16px/1.6 Consolas,'Cascadia Mono',monospace}
 header{padding:14px 22px;background:#161b22;border-bottom:1px solid #30363d;color:#e6edf3}
 #t{padding:16px 22px;white-space:pre-wrap}.ok{color:#3fb950}.bad{color:#f85149}.dim{color:#8b949e}</style>
-<header>python scripts/e2e_check.py &nbsp; (a lead POSTed to the Zap's hook, read back from the Cloudflare Worker)</header><div id="t"></div>`;
+<header>e2e_check.py (hook to Worker), then e2e_chain.py (Jotform form to Airtable)</header><div id="t"></div>`;
 
 (async () => {
   const b = await chromium.launch({ headless: true });
